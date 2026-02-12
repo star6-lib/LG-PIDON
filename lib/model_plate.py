@@ -31,7 +31,8 @@ class DG(nn.Module):
         # get the first kernel
         enc = self.branch(shape_coor)    # (B, M, F)
         enc_masked = enc * shape_flag.unsqueeze(-1)    # (B, M, F)
-        Domain_enc = torch.sum(enc_masked, 1, keepdim=True) / torch.sum(shape_flag.unsqueeze(-1), 1, keepdim=True)    # (B, 1, F)
+        denom = torch.sum(shape_flag.unsqueeze(-1), 1, keepdim=True).clamp_min(1.0)
+        Domain_enc = torch.sum(enc_masked, 1, keepdim=True) / denom    # (B, 1, F)
 
         return Domain_enc
 
